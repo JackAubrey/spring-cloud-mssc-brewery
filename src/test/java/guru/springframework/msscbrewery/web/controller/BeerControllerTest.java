@@ -1,6 +1,5 @@
 package guru.springframework.msscbrewery.web.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import guru.springframework.msscbrewery.services.BeerService;
 import guru.springframework.msscbrewery.web.model.BeerDto;
@@ -16,7 +15,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
-import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
@@ -90,7 +88,6 @@ class BeerControllerTest {
         // given
         BeerDto beerDto = validBeer;
         beerDto.setId(null);
-        BeerDto savedDto = BeerDto.builder().id(UUID.randomUUID()).beerName("Beer Updated").build();
         String beerDtoJson = objectMapper.writeValueAsString(beerDto);
 
         doNothing().when(beerService).updateBeer(any(UUID.class), any(BeerDto.class));
@@ -103,6 +100,21 @@ class BeerControllerTest {
 
         // then
         verify(beerService, times(1)).updateBeer(any(UUID.class), any(BeerDto.class));
+        verifyNoMoreInteractions(beerService);
+    }
+
+    @Test
+    void deleteBeer() throws Exception {
+        // given
+        doNothing().when(beerService).deleteById(any(UUID.class));
+
+        // when
+        mockMvc.perform(delete("/api/v1/beer/" + UUID.randomUUID())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+
+        // then
+        verify(beerService, times(1)).deleteById(any(UUID.class));
         verifyNoMoreInteractions(beerService);
     }
 }
