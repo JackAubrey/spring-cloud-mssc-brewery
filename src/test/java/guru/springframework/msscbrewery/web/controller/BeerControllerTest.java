@@ -84,6 +84,28 @@ class BeerControllerTest {
     }
 
     @Test
+    void handlePost_when_beer_name_is_blank() throws Exception {
+        // given
+        BeerDto beerDto = validBeer;
+        beerDto.setId(null);
+        beerDto.setBeerName(null);
+        BeerDto savedDto = BeerDto.builder().id(UUID.randomUUID()).beerName("New Beer").build();
+        String beerDtoJson = objectMapper.writeValueAsString(beerDto);
+
+        given(beerService.saveNewBeer(any(BeerDto.class))).willReturn(savedDto);
+
+        // when
+        mockMvc.perform(post("/api/v1/beer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(beerDtoJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.beerName").value("The Beer Name is mandatory"));
+
+        // then
+        verifyNoInteractions(beerService);
+    }
+
+    @Test
     void handleUpdate() throws Exception {
         // given
         BeerDto beerDto = validBeer;
