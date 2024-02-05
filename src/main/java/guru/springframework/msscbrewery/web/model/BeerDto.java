@@ -20,9 +20,9 @@ import java.util.UUID;
 public class BeerDto {
     @Null
     private UUID id;
-    @NotBlank
+    @NotBlank(message = "The Beer Name is mandatory")
     private String beerName;
-    @NotBlank
+    @NotBlank(message = "The Beer Style is mandatory")
     private String beerStyle;
     @Positive
     private Long upc;

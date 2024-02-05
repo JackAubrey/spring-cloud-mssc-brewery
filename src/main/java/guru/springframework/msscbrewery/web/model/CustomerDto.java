@@ -1,5 +1,8 @@
 package guru.springframework.msscbrewery.web.model;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +15,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class CustomerDto {
+    @Null
     private UUID id;
+    @NotBlank(message = "The Customer Name is mandatory")
+    @Size(min = 3, max = 100, message = "The Customer Name must to be at least 3 and max 100 characters")
     private String name;
 }

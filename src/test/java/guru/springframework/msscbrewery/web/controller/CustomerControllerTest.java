@@ -82,6 +82,50 @@ class CustomerControllerTest {
     }
 
     @Test
+    void handlePost_when_name_is_null() throws Exception {
+        // given
+        CustomerDto customerDto = validCustomer;
+        customerDto.setId(null);
+        customerDto.setName(null);
+        CustomerDto savedDto = CustomerDto.builder().id(UUID.randomUUID()).build();
+        String customerDtoJson = objectMapper.writeValueAsString(customerDto);
+
+        given(customerService.saveNewCustomer(any(CustomerDto.class))).willReturn(savedDto);
+
+        // when
+        mockMvc.perform(post("/api/v1/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(customerDtoJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").value("The Customer Name is mandatory"));
+
+        // then
+        verifyNoInteractions(customerService);
+    }
+
+    @Test
+    void handlePost_when_name_is_less_than_3() throws Exception {
+        // given
+        CustomerDto customerDto = validCustomer;
+        customerDto.setId(null);
+        customerDto.setName("a");
+        CustomerDto savedDto = CustomerDto.builder().id(UUID.randomUUID()).build();
+        String customerDtoJson = objectMapper.writeValueAsString(customerDto);
+
+        given(customerService.saveNewCustomer(any(CustomerDto.class))).willReturn(savedDto);
+
+        // when
+        mockMvc.perform(post("/api/v1/customer")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(customerDtoJson))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.name").value("The Customer Name must to be at least 3 and max 100 characters"));
+
+        // then
+        verifyNoInteractions(customerService);
+    }
+
+    @Test
     void handlePut() throws Exception {
         // given
         CustomerDto customerDto = validCustomer;
